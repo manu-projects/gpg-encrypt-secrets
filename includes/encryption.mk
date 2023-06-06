@@ -9,15 +9,15 @@ SECRET_DIRECTORIES=$(shell cat secret-directories.list \
 	| tr '\n' ' ' \
 )
 
-SECRET_FILES_FROM_DIRS=$(shell find $(SECRET_DIRECTORIES) -type f -name '*.secrets.txt' \
+SECRET_FILES_FROM_DIRS=$(shell find $(SECRET_DIRECTORIES) -type f -name '*.$(SECRET_FILE_EXTENSION)' \
 	| awk '!/^\#/' \
 	| tr '\n' ' ' \
 )
 
 SECRETS=$(SECRET_FILES) $(SECRET_FILES_FROM_DIRS)
 
-ENCRYPTED_SECRETS=$(SECRETS:.secrets.txt=.encrypted)
-#ENCRYPTED_SECRETS=$(subst .secrets.txt,.encrypted,$(SECRETS))
+ENCRYPTED_SECRETS=$(SECRETS:.$(SECRET_FILE_EXTENSION)=.$(ENCRYPTED_SECRET_EXTENSION))
+#ENCRYPTED_SECRETS=$(subst .$(SECRET_FILE_EXTENSION),.$(ENCRYPTED_SECRET_EXTENSION),$(SECRETS))
 
 # Target de Seguimiento
 # --------------------
@@ -34,18 +34,18 @@ encrypted-files-update: $(ENCRYPTED_SECRETS)
 #
 # - compara el timestamp del patrón de ambos archivos (%.ext1 y %.ext2)
 # - encripta el secreto sólo si el timestamp del archivo secreto es más reciente que el encriptado
-%.encrypted: %.secrets.txt
-	@echo "encriptando $*.secrets.txt como $@"
+%.$(ENCRYPTED_SECRET_EXTENSION): %.$(SECRET_FILE_EXTENSION)
+	@echo "encriptando $*.$(SECRET_FILE_EXTENSION) como $@"
 	@gpg \
 		--output="$@" \
 		--encrypt \
 		--recipient="$(GPG_SUBKEY_ENCRYPTED_ID)" \
-		$*.secrets.txt
+		$*.$(SECRET_FILE_EXTENSION)
 
-%.secrets.txt:
+%.$(SECRET_FILE_EXTENSION):
 	@echo "desencriptando $* como $@"
 	@gpg \
 		--output="$@" \
 		--decrypt \
 		--recipient="$(GPG_SUBKEY_ENCRYPTED_ID)" \
-		$*.encrypted
+		$*.$(ENCRYPTED_SECRET_EXTENSION)

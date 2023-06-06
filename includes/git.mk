@@ -1,7 +1,7 @@
-GIT_IGNORE_FILES=sample encrypted-files-update \*.secret.txt \*.secrets.txt
+GIT_IGNORE_FILES=sample encrypted-files-update \*.$(SECRET_FILE_EXTENSION)
 
 init-gitignore:
-ifeq ($(shell grep ".[secret,secrets].txt" .gitignore && echo 1 || echo 0), 0)
+ifeq ($(shell grep ".$(SECRET_FILE_EXTENSION)" .gitignore && echo 1 || echo 0), 0)
 	@$(foreach FILE, $(GIT_IGNORE_FILES), \
 		echo $(FILE) >> .gitignore; \
 	)
