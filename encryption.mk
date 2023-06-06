@@ -1,7 +1,4 @@
-SECRET_FILES= \
-	sample/mutt/configs/mutt.secrets.txt \
-	sample/telegram/configs/telegram.secrets.txt \
-	sample/tut/configs/tut.secrets.txt
+SECRET_FILES=$(shell cat secret-files.list | tr '\n' ' ')
 
 ENCRYPTED_SECRETS=$(SECRET_FILES:.secrets.txt=.encrypted)
 #ENCRYPTED_SECRETS=$(subst .secrets.txt,.encrypted,$(SECRET_FILES))
