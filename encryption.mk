@@ -1,7 +1,23 @@
-SECRET_FILES=$(shell cat secret-files.list | tr '\n' ' ')
+# TODO: refactor de los pipelines, la expansión de las macros de utils.mk generan errores en el Makefile
+SECRET_FILES=$(shell cat secret-files.list \
+	| awk '!/^\#/' \
+	| tr '\n' ' ' \
+)
 
-ENCRYPTED_SECRETS=$(SECRET_FILES:.secrets.txt=.encrypted)
-#ENCRYPTED_SECRETS=$(subst .secrets.txt,.encrypted,$(SECRET_FILES))
+SECRET_DIRECTORIES=$(shell cat secret-directories.list \
+	| awk '!/^\#/' \
+	| tr '\n' ' ' \
+)
+
+SECRET_FILES_FROM_DIRS=$(shell find $(SECRET_DIRECTORIES) -type f -name '*.secrets.txt' \
+	| awk '!/^\#/' \
+	| tr '\n' ' ' \
+)
+
+SECRETS=$(SECRET_FILES) $(SECRET_FILES_FROM_DIRS)
+
+ENCRYPTED_SECRETS=$(SECRETS:.secrets.txt=.encrypted)
+#ENCRYPTED_SECRETS=$(subst .secrets.txt,.encrypted,$(SECRETS))
 
 # Target de Seguimiento
 # --------------------
