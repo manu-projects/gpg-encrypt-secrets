@@ -1,0 +1,28 @@
+#+TITLE: Git GPG Encryption
+* Intro
+** ¿Qué es?
+   - programa sencillo para encriptar archivos "secretos" (no oculta el nombre, sólo los datos)
+   - encripta archivos específicos, todos los archivos de directorios específicos
+** ¿Por qué lo utilizo?
+   - utiliza (gpg) *GNU Privacy Guard* para encriptar/desencriptar datos
+   - persistir datos sensibles en un repositorio público
+   - evitar instalación de programas con muchas dependencias ó que requieren muchos pasos de configuración
+* Ejemplo
+  #+BEGIN_SRC shell
+    # encripta los ficheros según los archivos de configuración
+    make encrypted-files-update
+
+    # inicializa el .gitignore para "no subir" los archivos sensibles
+    make init-gitignore
+
+    # creamos/borramos archivos de ejemplo
+    make create-samples
+    make delete-samples
+
+    # agregamos contenido e los archivos de ejemplo
+    make update-all-samples
+  #+END_SRC
+* Configuración
+  - podemos especificar cada archivo secreto a encriptar ó aclarar varios directorios
+  - en el fichero ~secret-files.list~ contiene cada archivo secreto a encriptar
+  - en el fichero ~secret-directories.list~ contiene los directorios con archivos secretos
