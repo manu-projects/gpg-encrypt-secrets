@@ -12,6 +12,9 @@
     # encripta los ficheros según los archivos de configuración
     make encrypted-files-update
 
+    # remueve de forma segura los secretos del proyecto
+    make safely-remove-secrets
+
     # inicializa el .gitignore para "no subir" los archivos sensibles
     make init-gitignore
 

@@ -14,7 +14,8 @@ SECRET_FILES_FROM_DIRS=$(shell find $(SECRET_DIRECTORIES) -type f -name '*.$(SEC
 	| tr '\n' ' ' \
 )
 
-SECRETS=$(SECRET_FILES) $(SECRET_FILES_FROM_DIRS)
+# la función sort de GNU Make, ordena removiendo las palabras duplicadas
+SECRETS=$(sort $(SECRET_FILES) $(SECRET_FILES_FROM_DIRS))
 
 ENCRYPTED_SECRETS=$(SECRETS:.$(SECRET_FILE_EXTENSION)=.$(ENCRYPTED_SECRET_EXTENSION))
 #ENCRYPTED_SECRETS=$(subst .$(SECRET_FILE_EXTENSION),.$(ENCRYPTED_SECRET_EXTENSION),$(SECRETS))
@@ -24,16 +25,17 @@ ENCRYPTED_SECRETS=$(SECRETS:.$(SECRET_FILE_EXTENSION)=.$(ENCRYPTED_SECRET_EXTENS
 #
 # - marcamos el último momento que se produjo un evento (encriptado de ficheros)
 # - por lo general éste target tiende a ser un fichero vacío, pero preferimos que se comporte como un log
-# - compara el timestamp se actualización del target (fichero) con el de los ficheros encriptados,
-# provocando que compare el timestamp de actualización de los ficheros encriptados con el de los secretos
+# - compara el timestamp de modificación del target (fichero) con el de los ficheros encriptados,
+# provocando que compare el timestamp de modificación de los ficheros encriptados con el de los secretos
 encrypted-files-update: $(ENCRYPTED_SECRETS)
 	@echo "$(DATE_NOW) $?" | tee --append $@
 
 # Regla Implícita de Patrón
 # -------------------------
 #
+# - utilizamos Encriptación Asimétrica (requiere un Par de Claves, se recomienda que la Clave Privada tenga una "frase de paso")
 # - compara el timestamp del patrón de ambos archivos (%.ext1 y %.ext2)
-# - encripta el secreto sólo si el timestamp del archivo secreto es más reciente que el encriptado
+# - encripta el secreto sólo si el timestamp de modificación del archivo secreto es más reciente que el encriptado
 %.$(ENCRYPTED_SECRET_EXTENSION): %.$(SECRET_FILE_EXTENSION)
 	@echo "encriptando $*.$(SECRET_FILE_EXTENSION) como $@"
 	@gpg \
@@ -49,3 +51,8 @@ encrypted-files-update: $(ENCRYPTED_SECRETS)
 		--decrypt \
 		--recipient="$(GPG_SUBKEY_ENCRYPTED_ID)" \
 		$*.$(ENCRYPTED_SECRET_EXTENSION)
+
+# - el comando `shred` reduce el riesgo de que obtengan los datos de los archivos secretos con "programas forénses"
+safely-remove-secrets:
+	@shred --iterations=7 --verbose --zero $(SECRETS) \
+	&& rm --verbose --force $(SECRETS)
