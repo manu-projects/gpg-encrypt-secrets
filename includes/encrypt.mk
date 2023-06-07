@@ -1,24 +1,24 @@
 # TODO: refactor de los pipelines, la expansión de las macros de utils.mk generan errores en el Makefile
-SECRET_FILES=$(shell cat secret-files.list \
+LIST_SECRET_FILES=$(shell cat secret-files.list \
 	| awk '!/^\#/' \
 	| tr '\n' ' ' \
 )
 
-SECRET_DIRECTORIES=$(shell cat secret-directories.list \
+LIST_SECRET_DIRECTORIES=$(shell cat secret-directories.list \
 	| awk '!/^\#/' \
 	| tr '\n' ' ' \
 )
 
-SECRET_FILES_FROM_DIRS=$(shell find $(SECRET_DIRECTORIES) -type f -name '*.$(SECRET_FILE_EXTENSION)' \
+SECRET_FILES_FROM_DIRS=$(shell find $(LIST_SECRET_DIRECTORIES) -type f -name '*.$(SECRET_FILE_EXTENSION)' \
 	| awk '!/^\#/' \
 	| tr '\n' ' ' \
 )
 
 # la función sort de GNU Make, ordena removiendo las palabras duplicadas
-SECRETS=$(sort $(SECRET_FILES) $(SECRET_FILES_FROM_DIRS))
+SECRETS=$(sort $(LIST_SECRET_FILES) $(SECRET_FILES_FROM_DIRS))
 
-ENCRYPTED_SECRETS=$(SECRETS:.$(SECRET_FILE_EXTENSION)=.$(ENCRYPTED_SECRET_EXTENSION))
-#ENCRYPTED_SECRETS=$(subst .$(SECRET_FILE_EXTENSION),.$(ENCRYPTED_SECRET_EXTENSION),$(SECRETS))
+# $(subst palabra_buscada, palabra_nueva, texto)
+ENCRYPTED_SECRETS=$(subst .$(SECRET_FILE_EXTENSION),.$(ENCRYPTED_SECRET_EXTENSION),$(SECRETS))
 
 # Target de Seguimiento
 # --------------------
@@ -43,14 +43,6 @@ encrypted-files-update: $(ENCRYPTED_SECRETS)
 		--encrypt \
 		--recipient="$(GPG_SUBKEY_ENCRYPTED_ID)" \
 		$*.$(SECRET_FILE_EXTENSION)
-
-%.$(SECRET_FILE_EXTENSION):
-	@echo "desencriptando $* como $@"
-	@gpg \
-		--output="$@" \
-		--decrypt \
-		--recipient="$(GPG_SUBKEY_ENCRYPTED_ID)" \
-		$*.$(ENCRYPTED_SECRET_EXTENSION)
 
 # - el comando `shred` reduce el riesgo de que obtengan los datos de los archivos secretos con "programas forénses"
 safely-remove-secrets:

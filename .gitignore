@@ -1,6 +1,6 @@
 sample
 encrypted-files-update
-*.secret.txt
+decrypted-files-update
 *.secrets.txt
 
 # Created by https://www.toptal.com/developers/gitignore/api/emacs
