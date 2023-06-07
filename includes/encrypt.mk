@@ -32,10 +32,14 @@ encrypted-files-update: $(ENCRYPTED_SECRETS)
 
 # Regla Implícita de Patrón
 # -------------------------
-#
 # - utilizamos Encriptación Asimétrica (requiere un Par de Claves, se recomienda que la Clave Privada tenga una "frase de paso")
-# - compara el timestamp del patrón de ambos archivos (%.ext1 y %.ext2)
+# - compara el timestamp de modificación del patrón de ambos archivos (%.ext1 y %.ext2)
 # - encripta el secreto sólo si el timestamp de modificación del archivo secreto es más reciente que el encriptado
+#
+# Macros especiales de GNU Make
+# -----------------------------
+# - $@	se expande con el nombre del target/objetivo a crear (el secreto encriptado)
+# - $*	se expande con el nombre de la dependencia que tiene un timestamp de modificación más reciente que el target/objetivo
 %.$(ENCRYPTED_SECRET_EXTENSION): %.$(SECRET_FILE_EXTENSION)
 	@echo "encriptando $*.$(SECRET_FILE_EXTENSION) como $@"
 	@gpg \
