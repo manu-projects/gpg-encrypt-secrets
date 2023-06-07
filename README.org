@@ -1,4 +1,5 @@
 #+TITLE: Git GPG Encryption
+[[file:assets/meme-cryptography.png]]
 * Intro
 ** ¿Qué es?
    - programa sencillo para encriptar archivos "secretos" (no oculta el nombre, sólo los datos)
