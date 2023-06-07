@@ -1,17 +1,31 @@
+# operador ?=
+# ------------
+#
+# - operador condicional de GNU Make
+# - asigna un Valor si y sólo si la Variable NO tiene un Valor asignado
+LIST_SECRET_FILES?=
+LIST_SECRET_DIRECTORIES?=
+
 # TODO: refactor de los pipelines, la expansión de las macros de utils.mk generan errores en el Makefile
-LIST_SECRET_FILES=$(shell cat secret-files.list \
-	| awk '!/^\#/' \
-	| tr '\n' ' ' \
+
+ifneq ("$(wildcard $(TEMPLATE_DIR))", "")
+LIST_SECRET_FILES=$(shell \
+	cat secret-files.list \
+	| $(AWK_REMOVE_COMMENTS) \
+	| $(TR_REMOVE_NEWLINE) \
 )
 
-LIST_SECRET_DIRECTORIES=$(shell cat secret-directories.list \
-	| awk '!/^\#/' \
-	| tr '\n' ' ' \
+LIST_SECRET_DIRECTORIES=$(shell \
+	cat secret-directories.list \
+	| $(AWK_REMOVE_COMMENTS) \
+	| $(TR_REMOVE_NEWLINE) \
 )
+endif
 
-SECRET_FILES_FROM_DIRS=$(shell find $(LIST_SECRET_DIRECTORIES) -type f -name '*.$(SECRET_FILE_EXTENSION)' \
-	| awk '!/^\#/' \
-	| tr '\n' ' ' \
+SECRET_FILES_FROM_DIRS=$(shell \
+	find $(LIST_SECRET_DIRECTORIES) -type f -name '*.$(SECRET_FILE_EXTENSION)' \
+	| $(AWK_REMOVE_COMMENTS) \
+	| $(TR_REMOVE_NEWLINE) \
 )
 
 # la función sort de GNU Make, ordena removiendo las palabras duplicadas
