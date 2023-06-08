@@ -12,7 +12,7 @@ include includes/encrypt.mk
 include includes/decrypt.mk
 else
 include $(DIR_BASE)/config.mk
-#include $(DIR_BASE)/includes/template.mk
+include $(DIR_BASE)/includes/template.mk
 include $(DIR_BASE)/includes/utils.mk
 include $(DIR_BASE)/includes/git.mk
 include $(DIR_BASE)/includes/encrypt.mk
@@ -21,7 +21,7 @@ endif
 
 init:
 	cd .. \
-	&& echo "include $(DIR_BASE)/Makefile" >> Makefile \
+	&& sed --in-place="1s/^/include $(DIR_BASE)\/Makefile\n/" Makefile \
 	&& make --no-print-directory update-gitignore
 
 .PHONY: init
