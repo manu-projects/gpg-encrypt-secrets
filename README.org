@@ -31,13 +31,34 @@
     cd ..
   #+END_SRC
 ** Agregar archivos secretos específicos
-   - en el fichero ~gpg-encrypt-secrets/secret-files.list~ agregamos cada archivo secreto a encriptar/desencriptar
+   - archivo de configuración ~ruta-tu-proyecto/gpg-encrypt-secrets/secret-files.list~
+   - agregamos *la ruta absoluta* de cada archivo secreto a encriptar/desencriptar
    - no se recomienda si son varios archivos ó muchos directorios (sólo porque sería una tarea tediosa)
 ** Agregar directorios con archivos secretos
-   - en el fichero ~gpg-encrypt-secrets/secret-directories.list~ agregamos el directorio/ ó directorio/../subdirectorio con archivos secretos
+   - archivo de configuración ~ruta-tu-proyecto/gpg-encrypt-secrets/secret-directories.list~
+   - agregamos el directorio/ ó directorio/../subdirectorio con archivos secretos
    - agrupa todos los archivos secretos de un directorio
+** Clave GPG + Extensión de los archivos secretos y encriptados
+   - Archivo de configuración ~ruta-tu-proyecto/gpg-encrypt-secrets/config.mk~
+
+   #+BEGIN_QUOTE
+   NO olvidar que, si en el proyecto tenemos archivos encriptados con la aplicación,
+   pero luego borramos ó perdemos ó cambiamos el *Par de Claves Secundarias de GPG para encriptar/desencriptar*,
+   entonces NO podremos desencriptar los archivos encriptados (en particular la Clave Secundaria Privada)
+   #+END_QUOTE
+
+   #+BEGIN_SRC makefile
+     # nombre por default, podemos cambiarlo
+     SECRET_FILE_EXTENSION=secrets.txt
+
+     # nosotros elegimos éste nombre, aunque .gpg es la extensión del binario encriptado que asignaría el programa GPG
+     ENCRYPTED_SECRET_EXTENSION=encrypted
+
+     # cambiar por el ID de Par de Claves Secundarias para [E]ncriptar (encrypt capability) que hayas creado
+     GPG_SUBKEY_ENCRYPTED_ID=0x273250B7E54E64CA
+   #+END_SRC
 * Ejemplo de uso
-  - los comandos podemos ejecutarlos desde la raíz de nuestro proyecto, no es necesario acceder al directorio de la aplicación clonada
+  - ejecutar los comandos desde el directorio raíz de tú proyecto
 
   #+BEGIN_SRC shell
     # encripta los ficheros según los archivos de configuración
