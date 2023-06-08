@@ -21,7 +21,7 @@ endif
 
 init:
 	cd .. \
-	&& sed --in-place="1s/^/include $(DIR_BASE)\/Makefile\n/" Makefile \
+	&& sed -i "1s/^/include $(DIR_BASE)\/Makefile\n/" Makefile \
 	&& make --no-print-directory update-gitignore
 
 .PHONY: init
