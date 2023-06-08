@@ -13,6 +13,3 @@ $(TEMPLATE_DIRS):
 	@cd $(TEMPLATE_DIR) \
 	&& mkdir --verbose --parents $@/configs \
 	&& touch $@/configs/$@.$(SECRET_FILE_EXTENSION)
-
-test:
-	@echo hola

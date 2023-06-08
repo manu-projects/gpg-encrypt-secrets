@@ -3,30 +3,40 @@
 #
 # - operador condicional de GNU Make
 # - asigna un Valor si y sólo si la Variable NO tiene un Valor asignado
-LIST_SECRET_FILES?=
-LIST_SECRET_DIRECTORIES?=
+#
+# LIST_SECRET_DIRECTORIES?=
+SECRET_FILES_FROM_DIRS?=
 
-# TODO: refactor de los pipelines, la expansión de las macros de utils.mk generan errores en el Makefile
-
-ifneq ("$(wildcard $(TEMPLATE_DIR))", "")
-LIST_SECRET_FILES=$(shell \
-	cat secret-files.list \
-	| $(AWK_REMOVE_COMMENTS) \
-	| $(TR_REMOVE_NEWLINE) \
-)
-
-LIST_SECRET_DIRECTORIES=$(shell \
-	cat secret-directories.list \
-	| $(AWK_REMOVE_COMMENTS) \
-	| $(TR_REMOVE_NEWLINE) \
-)
+# nos permite probar el programa con templates, previo a incluir en un proyecto real
+ifeq ("$(wildcard $(DIR_BASE))","")
+SECRET_FILES=secret-files.list
+SECRET_DIRECTORIES=secret-directories.list
+else
+SECRET_FILES=$(DIR_BASE)/secret-files.list
+SECRET_DIRECTORIES=$(DIR_BASE)/secret-directories.list
 endif
 
+# TODO: refactor nombre, presta confusión entre LIST_SECRET_FILES y SECRET_FILES
+LIST_SECRET_FILES=$(shell \
+	cat $(SECRET_FILES) \
+	| $(AWK_REMOVE_COMMENTS) \
+	| $(TR_REMOVE_NEWLINE) \
+)
+
+# TODO: refactor nombre
+LIST_SECRET_DIRECTORIES=$(shell \
+	cat $(SECRET_DIRECTORIES) \
+	| $(AWK_REMOVE_COMMENTS) \
+	| $(TR_REMOVE_NEWLINE) \
+)
+
+ifneq ("$(wildcard $(LIST_SECRET_DIRECTORIES))", "")
 SECRET_FILES_FROM_DIRS=$(shell \
 	find $(LIST_SECRET_DIRECTORIES) -type f -name '*.$(SECRET_FILE_EXTENSION)' \
 	| $(AWK_REMOVE_COMMENTS) \
 	| $(TR_REMOVE_NEWLINE) \
 )
+endif
 
 # la función sort de GNU Make, ordena removiendo las palabras duplicadas
 SECRETS=$(sort $(LIST_SECRET_FILES) $(SECRET_FILES_FROM_DIRS))
