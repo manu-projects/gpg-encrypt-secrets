@@ -14,11 +14,32 @@
 ** ¿Qué no pretende hacer?
    - NO pretende encriptar/desencriptar previo a realizar un commit/push en github
    - NO pretende ocultar el nombre de los archivos secretos (sólo cifra su contenido)
-* Ejemplo
+* Configuración
+** Inicializar aplicación
   #+BEGIN_SRC shell
-    # (IMPORTANTE) inicializa el .gitignore para "no subir" los archivos sensibles
-    make init-gitignore
+    # 1. Accedemos a nuestro proyecto y lo clonamos en el mismo directorio
+    cd ~/Documents/git/.my-dotfiles
+    git clone git@github.com:manu-projects/gpg-encrypt-secrets.git
 
+    # 2. inicializamos la aplicación
+    # - actualizará el .gitignore para evitar subir los archivos con datos sensibles
+    # - creará un Makefile (ó bien lo actualizará si existe) para poder utilizar los comandos de la app
+    cd gpg-encrypt-secrets
+    make init
+
+    # 3. Disfrutar de la aplicación, desde el directorio raíz de tu proyecto :)
+    cd ..
+  #+END_SRC
+** Agregar archivos secretos específicos
+   - en el fichero ~gpg-encrypt-secrets/secret-files.list~ agregamos cada archivo secreto a encriptar/desencriptar
+   - no se recomienda si son varios archivos ó muchos directorios (sólo porque sería una tarea tediosa)
+** Agregar directorios con archivos secretos
+   - en el fichero ~gpg-encrypt-secrets/secret-directories.list~ agregamos el directorio/ ó directorio/../subdirectorio con archivos secretos
+   - agrupa todos los archivos secretos de un directorio
+* Ejemplo de uso
+  - los comandos podemos ejecutarlos desde la raíz de nuestro proyecto, no es necesario acceder al directorio de la aplicación clonada
+
+  #+BEGIN_SRC shell
     # encripta los ficheros según los archivos de configuración
     make encrypted-files-update
 
@@ -32,7 +53,3 @@
     make generate-template
     make delete-template
   #+END_SRC
-* Configuración
-  - podemos especificar cada archivo secreto a encriptar ó aclarar varios directorios
-  - en el fichero ~secret-files.list~ contiene cada archivo secreto a encriptar
-  - en el fichero ~secret-directories.list~ contiene los directorios con archivos secretos

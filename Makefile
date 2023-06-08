@@ -2,7 +2,7 @@ SHELL:=/bin/bash
 
 DIR_BASE=gpg-encrypt-secrets
 
-# TODO: refactor, foreach ?
+# TODO: refactor, bash lanza error si utilizamos `include includes/*.mk` ó include $(wildcard includes/*.mk)
 ifeq ("$(wildcard $(DIR_BASE))","")
 include config.mk
 include includes/template.mk
